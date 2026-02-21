@@ -1,6 +1,8 @@
-# backend/app/routes/whatif.py (Stub required for main.py to mount)
 from fastapi import APIRouter
+
 router = APIRouter()
+
 @router.post("/")
 async def scenario_analysis():
-    pass
+    # To be implemented: Will loop over multiple routing logic paths to find lowest cost
+    return {"status": "What-If Engine initialized."}

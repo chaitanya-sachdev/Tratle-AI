@@ -1,22 +1,11 @@
-# backend/app/models/response_models.py
 from pydantic import BaseModel
 from typing import List, Optional
 
-class HSAlternative(BaseModel):
-    hs_code: str
-    reasoning: str
-
-class HSAnalysisResponse(BaseModel):
-    hs_code: str
+class HSAnalysis(BaseModel):
+    predicted_code: str
     confidence: float
-    alternatives: List[HSAlternative]
+    alternatives: List[str]
     reasoning: str
-
-class OriginEligibilityResponse(BaseModel):
-    is_eligible: bool
-    applied_fta: Optional[str]
-    rvc_score: float
-    tariff_shift_met: bool
 
 class DutyCalculationResponse(BaseModel):
     customs_value: float
@@ -24,3 +13,11 @@ class DutyCalculationResponse(BaseModel):
     vat: float
     shipping_cost: float
     total_landed_cost: float
+    transit_route: List[str]  # Outputs the exact country-to-country path
+
+class OriginEligibilityResponse(BaseModel):
+    is_eligible: bool
+    applied_fta: Optional[str]
+    rvc_score: float
+    tariff_shift_met: bool
+    direct_transit_met: bool  # Fails if routed through a non-FTA country
