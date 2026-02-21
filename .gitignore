@@ -1,2 +1,64 @@
 .env 
 backend/.env 
+=======
+venv/ 
+# ==============================
+# Python
+# ==============================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.env 
+backend/.env
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# FastAPI / backendg
+backend/venv/
+backend/__pycache__/
+
+# ==============================
+# Environment Variables
+# ==============================
+.env
+backend/.env
+frontend/.env
+*.env
+
+# ==============================
+# Logs
+# ==============================
+*.log
+
+# ==============================
+# Node / Frontend
+# ==============================
+node_modules/
+.next/
+out/
+dist/
+build/
+
+# Package lock files (optional)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ==============================
+# OS Files
+# ==============================
+.DS_Store
+Thumbs.db
+
+# ==============================
+# IDE / Editor
+# ==============================
+.vscode/
+.idea/
+*.swp
+>>>>>>> 91245b7dbf1d92cf58fef42b962eaac8ebbfd055
