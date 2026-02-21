@@ -7,17 +7,26 @@ class HSAnalysis(BaseModel):
     alternatives: List[str]
     reasoning: str
 
-class DutyCalculationResponse(BaseModel):
+class DutyBreakdown(BaseModel):
     customs_value: float
-    base_duty: float
-    vat: float
+    base_duty_amount: float
+    vat_amount: float
     shipping_cost: float
     total_landed_cost: float
-    transit_route: List[str]  # Outputs the exact country-to-country path
 
-class OriginEligibilityResponse(BaseModel):
+class OriginResult(BaseModel):
     is_eligible: bool
     applied_fta: Optional[str]
     rvc_score: float
     tariff_shift_met: bool
-    direct_transit_met: bool  # Fails if routed through a non-FTA country
+
+class OptimizationSuggestion(BaseModel):
+    strategy_type: str
+    estimated_savings: float
+    actionable_advice: str
+
+class TradeResponse(BaseModel):
+    hs_analysis: HSAnalysis
+    origin_result: OriginResult
+    duty_breakdown: DutyBreakdown
+    optimization: Optional[OptimizationSuggestion]

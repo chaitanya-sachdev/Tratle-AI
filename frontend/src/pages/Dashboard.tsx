@@ -8,35 +8,117 @@ import { mockAnalysis } from "@/services/mockData";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { TradeResponse } from "@/services/api";
 
-const data = mockAnalysis;
+const mockData = mockAnalysis;
 
-const costPieData = [
-  { name: "Product", value: data.costBreakdown.productValue, color: "hsl(265 90% 60%)" },
-  { name: "Duty", value: data.costBreakdown.dutyAmount, color: "hsl(0 72% 55%)" },
-  { name: "Shipping", value: data.costBreakdown.shippingCost, color: "hsl(175 80% 45%)" },
-  { name: "Insurance", value: data.costBreakdown.insurance, color: "hsl(38 92% 55%)" },
-  { name: "Handling", value: data.costBreakdown.handlingFees, color: "hsl(220 15% 55%)" },
-];
-
-const shippingBarData = data.shippingOptions.map((o) => ({
-  name: o.mode.charAt(0).toUpperCase() + o.mode.slice(1),
-  cost: o.cost,
-  days: o.transitDays,
-}));
-
-const fadeUp = (i: number) => ({
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.5, ease: "easeOut" as const } },
-});
-
-const riskColors = { low: "text-success", medium: "text-warning", high: "text-destructive" };
-const riskBg = { low: "bg-success/10", medium: "bg-warning/10", high: "bg-destructive/10" };
-
-export default function Dashboard() {
+const Dashboard = () => {
+  const [data, setData] = useState(mockData);
   const [ftaOn, setFtaOn] = useState(true);
-  const savings = ftaOn ? 4250 : 0;
+
+  useEffect(() => {
+    // Try to get real data from sessionStorage
+    const storedAnalysis = sessionStorage.getItem('tradeAnalysis');
+    console.log('Stored analysis from sessionStorage:', storedAnalysis);
+    
+    if (storedAnalysis) {
+      try {
+        const analysis: TradeResponse = JSON.parse(storedAnalysis);
+        console.log('Parsed analysis:', analysis);
+        
+        // Ensure we have valid data structure
+        if (!analysis || !analysis.hs_analysis) {
+          console.error('Invalid analysis structure:', analysis);
+          return;
+        }
+        
+        // Transform the API response to match the expected data structure
+        const transformedData = {
+          hsCode: {
+            code: analysis.hs_analysis.predicted_code || 'Unknown',
+            description: "AI Classified Product",
+            confidence: (analysis.hs_analysis.confidence || 0) * 100,
+            dutyRate: 0.025 // Placeholder
+          },
+          alternativeCodes: (analysis.hs_analysis.alternatives || []).map(code => ({
+            code: code || 'Unknown',
+            description: "Alternative classification",
+            confidence: 75,
+            dutyRate: 0.02
+          })),
+          ftaEligibility: [{
+            agreement: analysis.origin_result?.applied_fta || "Not Applicable",
+            eligible: analysis.origin_result?.is_eligible || false,
+            rvcPercentage: analysis.origin_result?.rvc_score || 0,
+            requiredRvc: 62.5,
+            savings: (analysis.origin_result?.is_eligible && analysis.origin_result?.rvc_score > 62.5) ? 4250 : 0
+          }],
+          costBreakdown: {
+            productValue: analysis.duty_breakdown?.customs_value || 0,
+            dutyAmount: analysis.duty_breakdown?.base_duty_amount || 0,
+            shippingCost: analysis.duty_breakdown?.shipping_cost || 0,
+            insurance: analysis.duty_breakdown?.vat_amount || 0,
+            handlingFees: 1200,
+            totalLandedCost: analysis.duty_breakdown?.total_landed_cost || 0
+          },
+          shippingOptions: [
+            { mode: "air" as const, cost: 8200, transitDays: 3, co2Kg: 4120 },
+            { mode: "sea" as const, cost: 2400, transitDays: 28, co2Kg: 890 },
+            { mode: "land" as const, cost: 4800, transitDays: 12, co2Kg: 2100 },
+          ],
+          optimizedRoute: {
+            currentPath: {
+              countries: analysis.duty_breakdown ? ["Direct Route"] : [],
+              totalDuty: analysis.duty_breakdown?.base_duty_amount || 0,
+              totalCost: analysis.duty_breakdown?.total_landed_cost || 0
+            },
+            suggestedPath: {
+              countries: analysis.optimization ? ["Optimized Route"] : [],
+              totalDuty: Math.max(0, (analysis.duty_breakdown?.base_duty_amount || 0) - (analysis.optimization?.estimated_savings || 0)),
+              totalCost: Math.max(0, (analysis.duty_breakdown?.total_landed_cost || 0) - (analysis.optimization?.estimated_savings || 0))
+            },
+            savings: analysis.optimization?.estimated_savings || 0,
+            savingsPercent: analysis.optimization ? ((analysis.optimization.estimated_savings || 0) / (analysis.duty_breakdown?.total_landed_cost || 1)) * 100 : 0,
+            reason: analysis.optimization?.actionable_advice || "No optimization available"
+          },
+          complianceRisk: (analysis.hs_analysis.confidence || 0) > 0.8 ? "low" as const : "medium" as const,
+          recommendation: "Based on AI analysis",
+          reasoning: analysis.hs_analysis.reasoning || "Analysis complete"
+        };
+        
+        console.log('Transformed data:', transformedData);
+        setData(transformedData);
+      } catch (error) {
+        console.error('Failed to parse stored analysis:', error);
+        // Keep using mock data
+      }
+    }
+  }, []);
+
+  const savings = ftaOn && data.ftaEligibility[0]?.eligible ? data.ftaEligibility[0].savings : 0;
+
+  const costPieData = [
+    { name: "Product", value: data.costBreakdown?.productValue || 0, color: "hsl(265 90% 60%)" },
+    { name: "Duty", value: data.costBreakdown?.dutyAmount || 0, color: "hsl(0 72% 55%)" },
+    { name: "Shipping", value: data.costBreakdown?.shippingCost || 0, color: "hsl(175 80% 45%)" },
+    { name: "Insurance", value: data.costBreakdown?.insurance || 0, color: "hsl(38 92% 55%)" },
+    { name: "Handling", value: data.costBreakdown?.handlingFees || 0, color: "hsl(220 15% 55%)" },
+  ];
+
+  const shippingBarData = data.shippingOptions?.map((o) => ({
+    name: o.mode.charAt(0).toUpperCase() + o.mode.slice(1),
+    cost: o.cost || 0,
+    days: o.transitDays || 0,
+  }));
+
+  const fadeUp = (i: number) => ({
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.5, ease: "easeOut" as const } },
+  });
+
+  const riskColors = { low: "text-success", medium: "text-warning", high: "text-destructive" };
+  const riskBg = { low: "bg-success/10", medium: "bg-warning/10", high: "bg-destructive/10" };
 
   return (
     <div>
@@ -250,8 +332,8 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <div className="space-y-1 text-xs">
-                  <div className="flex justify-between"><span className="text-muted-foreground">Duties</span><span className="font-medium text-destructive">${data.optimizedRoute.currentPath.totalDuty.toLocaleString()}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Total Cost</span><span className="font-bold text-foreground">${data.optimizedRoute.currentPath.totalCost.toLocaleString()}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Duties</span><span className="font-medium text-destructive">${(data.optimizedRoute?.currentPath?.totalDuty || 0).toLocaleString()}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Total Cost</span><span className="font-bold text-foreground">${(data.optimizedRoute?.currentPath?.totalCost || 0).toLocaleString()}</span></div>
                 </div>
               </div>
 
@@ -287,8 +369,8 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <div className="space-y-1 text-xs">
-                  <div className="flex justify-between"><span className="text-muted-foreground">Duties</span><span className="font-medium text-success">${data.optimizedRoute.suggestedPath.totalDuty.toLocaleString()}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Total Cost</span><span className="font-bold text-foreground">${data.optimizedRoute.suggestedPath.totalCost.toLocaleString()}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Duties</span><span className="font-medium text-success">${(data.optimizedRoute?.suggestedPath?.totalDuty || 0).toLocaleString()}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Total Cost</span><span className="font-bold text-foreground">${(data.optimizedRoute?.suggestedPath?.totalCost || 0).toLocaleString()}</span></div>
                 </div>
               </div>
             </div>
@@ -305,4 +387,6 @@ export default function Dashboard() {
       </div>
     </div>
   );
-}
+};
+
+export default Dashboard;

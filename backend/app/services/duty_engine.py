@@ -1,30 +1,48 @@
-from typing import List
-from app.models.request_models import TradeRequest
-from app.models.response_models import DutyCalculationResponse
+import json
+import os
+from app.models.response_models import DutyBreakdown
+from app.models.request_models import ShippingMode
 
-# Nuclear approach: Base rate per kg + flat transit fee per border crossed
-BASE_SHIPPING_RATE_PER_KG = 2.00
-TRANSIT_FEE_PER_COUNTRY = 50.00 
+SHIPPING_RATES = {
+    ShippingMode.AIR: 5.00,
+    ShippingMode.LAND: 1.50,
+    ShippingMode.SEA: 0.50
+}
 
-def calculate_duty(request: TradeRequest, duty_rate: float, vat_rate: float) -> DutyCalculationResponse:
-    # Cost scales by distance/complexity (number of countries crossed)
-    shipping_cost = (request.weight_kg * BASE_SHIPPING_RATE_PER_KG) + (len(request.transit_countries) * TRANSIT_FEE_PER_COUNTRY)
+def load_tariffs():
+    path = os.path.join(os.path.dirname(__file__), "../data/tariffs.json")
+    with open(path, "r") as f:
+        return json.load(f)
+
+def calculate_landed_cost(
+    import_country: str, 
+    hs_code: str, 
+    total_value: float, 
+    weight_kg: float, 
+    shipping_mode: ShippingMode,
+    fta_eligible: bool
+) -> DutyBreakdown:
     
-    # CIF Value (Cost, Insurance, Freight)
-    cif_value = request.total_customs_value + shipping_cost
+    tariffs = load_tariffs()
+    country_data = tariffs.get(import_country, {"VAT": 0.0, "rates": {}})
     
-    base_duty = cif_value * duty_rate
-    vat = (cif_value + base_duty) * vat_rate
-    total_landed_cost = cif_value + base_duty + vat
+    shipping_cost = weight_kg * SHIPPING_RATES.get(shipping_mode, 1.0)
+    
+    # FALLBACK: If Groq invents an HS code we don't have, default to 5% instead of crashing
+    base_rate = country_data["rates"].get(hs_code, 0.05) 
+    duty_rate = 0.0 if fta_eligible else base_rate
+    base_duty_amount = total_value * duty_rate
+    
+    vat_rate = country_data["VAT"]
+    vat_basis = total_value + shipping_cost + base_duty_amount
+    vat_amount = vat_basis * vat_rate
+    
+    total_landed_cost = total_value + base_duty_amount + vat_amount + shipping_cost
 
-    # Construct the full visual route: Export -> Transit 1 -> Transit 2 -> Import
-    full_route = [request.export_country] + request.transit_countries + [request.import_country]
-
-    return DutyCalculationResponse(
-        customs_value=request.total_customs_value,
-        base_duty=round(base_duty, 2),
-        vat=round(vat, 2),
-        shipping_cost=round(shipping_cost, 2),
-        total_landed_cost=round(total_landed_cost, 2),
-        transit_route=full_route
+    return DutyBreakdown(
+        customs_value=total_value,
+        base_duty_amount=base_duty_amount,
+        vat_amount=vat_amount,
+        shipping_cost=shipping_cost,
+        total_landed_cost=total_landed_cost
     )

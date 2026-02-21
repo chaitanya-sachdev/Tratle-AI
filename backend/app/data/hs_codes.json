@@ -1,22 +1,12 @@
 [
-  {
-    "code": "851713",
-    "description": "Smartphones for cellular networks or for other wireless networks"
-  },
-  {
-    "code": "854231",
-    "description": "Electronic integrated circuits: Processors and controllers"
-  },
-  {
-    "code": "850760",
-    "description": "Lithium-ion batteries and accumulators"
-  },
-  {
-    "code": "841360",
-    "description": "Rotary positive displacement pumps for liquids"
-  },
-  {
-    "code": "610120",
-    "description": "Men's or boys' overcoats, car-coats, capes, cloaks and similar articles, knitted or crocheted, of cotton"
-  }
+  { "hs_code": "851713", "description": "Smartphones for cellular networks or for other wireless networks." },
+  { "hs_code": "854231", "description": "Electronic integrated circuits: Microprocessors and controllers." },
+  { "hs_code": "850760", "description": "Lithium-ion accumulators, including rechargeable batteries." },
+  { "hs_code": "854110", "description": "Diodes, other than photosensitive or light-emitting diodes (LED)." },
+  { "hs_code": "853400", "description": "Printed circuits (PCBs)." },
+  { "hs_code": "847160", "description": "Input/output units for ADP machines (keyboards, mice, scanners)." },
+  { "hs_code": "870840", "description": "Gear boxes and parts thereof for motor vehicles." },
+  { "hs_code": "870830", "description": "Brakes and servo-brakes; parts thereof for motor vehicles." },
+  { "hs_code": "870891", "description": "Radiators and parts thereof for motor vehicles." },
+  { "hs_code": "841360", "description": "Rotary positive displacement pumps for liquids." }
 ]

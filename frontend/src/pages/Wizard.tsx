@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import GlassCard from "@/components/GlassCard";
 import { cn } from "@/lib/utils";
+import { apiService, ProductRequest } from "@/services/api";
+import { toast } from "sonner";
 
 const steps = ["Product Details", "Trade Route", "Shipment Info", "BOM Upload", "Review"];
 
@@ -39,6 +41,7 @@ export default function Wizard() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
+  const [hsClassification, setHsClassification] = useState<any>(null);
   const [form, setForm] = useState<FormData>({
     productDescription: "Portable laptop computer, 14-inch display, Intel i7 processor, 16GB RAM, assembled in Mexico with US and Asian components",
     exportCountry: "Mexico",
@@ -61,17 +64,93 @@ export default function Wizard() {
 
   const update = useCallback((key: keyof FormData, value: any) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+    
+    // Auto-classify product when description changes
+    if (key === 'productDescription' && value.length > 10) {
+      classifyProduct(value);
+    }
   }, []);
+
+  const classifyProduct = async (description: string) => {
+    if (!description || description.length < 10) return;
+    
+    try {
+      const classification = await apiService.classifyProduct({ description });
+      setHsClassification(classification);
+      console.log('HS Classification:', classification);
+    } catch (error) {
+      console.error('Classification failed:', error);
+      toast.error('Failed to classify product');
+    }
+  };
 
   const next = () => { setDirection(1); setStep((s) => Math.min(s + 1, steps.length - 1)); };
   const prev = () => { setDirection(-1); setStep((s) => Math.max(s - 1, 0)); };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) update("bomFile", file);
+    if (file) {
+      processFile(file);
+    }
   };
 
-  const submit = () => navigate("/dashboard");
+  const processFile = (file: File) => {
+    update("bomFile", file);
+    
+    // Read and parse CSV file
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target?.result as string;
+        const lines = text.split('\n').filter(line => line.trim());
+        const parsedData = lines.map(line => line.split(',').map(cell => cell.trim()));
+        update("bomPreview", parsedData);
+      } catch (error) {
+        console.error('Error parsing CSV:', error);
+        toast.error('Error parsing CSV file');
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const submit = async () => {
+    try {
+      toast.loading("Running analysis...");
+      
+      // Parse BOM data if available
+      let bom = [];
+      if (form.bomPreview.length > 1) {
+        bom = form.bomPreview.slice(1).map(row => ({
+          hs_code: row[2] || '000000', // Use HS code from CSV or default
+          value: parseFloat(row[1]) || 0,
+          origin_country: row[2] || 'US', // Use origin from CSV or default
+          is_originating: false // Default to false for testing
+        }));
+      }
+
+      const request: ProductRequest = {
+        description: form.productDescription,
+        export_country: form.exportCountry,
+        import_country: form.importCountry,
+        weight_kg: parseFloat(form.weight) * parseFloat(form.quantity),
+        shipping_mode: form.shippingMode.charAt(0).toUpperCase() + form.shippingMode.slice(1) as 'Air' | 'Sea' | 'Land',
+        bom
+      };
+
+      console.log('Sending request:', request);
+      const response = await apiService.calculateTrade(request);
+      console.log('Received response:', response);
+      
+      // Store the analysis result in sessionStorage for the dashboard to use
+      sessionStorage.setItem('tradeAnalysis', JSON.stringify(response));
+      
+      toast.success("Analysis completed successfully!");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error('Analysis failed:', error);
+      toast.error(error instanceof Error ? error.message : "Analysis failed. Please try again.");
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -122,6 +201,17 @@ export default function Wizard() {
                     className="w-full h-32 rounded-lg bg-muted/50 border border-border p-3 text-sm text-foreground resize-none focus:border-primary/50 focus:outline-none transition-colors"
                     placeholder="Describe the product in detail..."
                   />
+                  {/* HS Code Display */}
+                  {hsClassification && (
+                    <div className="mt-2 p-2 rounded bg-primary/10 border border-primary/20">
+                      <div className="flex items-center gap-2">
+                        <Package className="w-3 h-3 text-primary" />
+                        <span className="text-xs font-medium text-primary">HS Code:</span>
+                        <span className="font-mono font-bold text-foreground ml-1">{hsClassification.predicted_code}</span>
+                        <span className="text-xs text-muted-foreground ml-2">({(hsClassification.confidence * 100).toFixed(1)}% confidence)</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -192,7 +282,26 @@ export default function Wizard() {
 
             {step === 3 && (
               <div className="space-y-4">
-                <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary/30 transition-colors cursor-pointer">
+                <div 
+                  className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary/30 transition-colors cursor-pointer"
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                      const file = files[0];
+                      if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+                        processFile(file);
+                      } else {
+                        toast.error('Please upload a CSV file');
+                      }
+                    }
+                  }}
+                >
                   <label className="cursor-pointer">
                     <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
                     <p className="text-sm font-medium">Upload Bill of Materials (CSV)</p>
@@ -231,6 +340,7 @@ export default function Wizard() {
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   {[
                     ["Product", form.productDescription.slice(0, 60) + "..."],
+                    ["HS Code", hsClassification ? hsClassification.predicted_code : "Not classified"],
                     ["Route", `${form.exportCountry} → ${form.importCountry}`],
                     ["Quantity", `${form.quantity} units @ $${form.value}`],
                     ["Weight", `${form.weight} kg/unit`],

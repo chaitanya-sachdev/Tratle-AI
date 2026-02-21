@@ -1,22 +1,53 @@
 from fastapi import APIRouter, HTTPException
-import json
-from app.models.request_models import TradeRequest
-from app.models.response_models import DutyCalculationResponse
-from app.services.duty_engine import calculate_duty
+from app.models.request_models import ProductRequest
+from app.models.response_models import TradeResponse
+from app.services.duty_engine import calculate_landed_cost
+from app.services.origin_engine import analyze_origin
+from app.services.optimization_engine import generate_optimization
+from app.services.hs_classifier import hs_classifier
 
-router = APIRouter()
+router = APIRouter(tags=["Trade Engine"])
 
-@router.post("/", response_model=DutyCalculationResponse)
-async def evaluate_duty(request: TradeRequest, product_hs6: str):
-    try:
-        with open("app/data/tariffs.json", "r") as f:
-            tariffs = json.load(f)
-            
-        # Get rates based on import country. Default to 0 if not found to prevent crashes.
-        country_data = tariffs.get(request.import_country, {"VAT": 0.0, "rates": {}})
-        duty_rate = country_data["rates"].get(product_hs6, 0.05) # 5% fallback
-        vat_rate = country_data["VAT"]
-        
-        return calculate_duty(request, duty_rate, vat_rate)
-    except FileNotFoundError:
-        raise HTTPException(status_code=500, detail="Tariff data file missing.")
+@router.post("/calculate", response_model=TradeResponse)
+async def calculate_trade(request: ProductRequest):
+    
+    # 1. Zero-Shot AI Classification
+    hs_analysis = await hs_classifier.classify(request.description)
+    
+    # Catch Invalid or non-physical items (e.g., human names, gibberish)
+    if hs_analysis.predicted_code == "INVALID":
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Invalid Product: {hs_analysis.reasoning}"
+        )
+    
+    total_value = sum(item.value for item in request.bom)
+
+    # 2. Origin & FTA Engine
+    origin_result = analyze_origin(
+        import_country=request.import_country,
+        export_country=request.export_country,
+        product_hs=hs_analysis.predicted_code,
+        total_value=total_value,
+        bom=request.bom
+    )
+
+    # 3. Duty & Cost Engine
+    duty_result = calculate_landed_cost(
+        import_country=request.import_country,
+        hs_code=hs_analysis.predicted_code,
+        total_value=total_value,
+        weight_kg=request.weight_kg,
+        shipping_mode=request.shipping_mode,
+        fta_eligible=origin_result.is_eligible
+    )
+
+    # 4. Optimization Engine
+    optimization = generate_optimization(request, origin_result, duty_result)
+
+    return TradeResponse(
+        hs_analysis=hs_analysis,
+        origin_result=origin_result,
+        duty_breakdown=duty_result,
+        optimization=optimization
+    )

@@ -1,18 +1,25 @@
-from pydantic import BaseModel, Field, conlist
+from pydantic import BaseModel, Field
 from typing import List
+from enum import Enum
+
+class ShippingMode(str, Enum):
+    AIR = "Air"
+    SEA = "Sea"
+    LAND = "Land"
+
+class ProductQuery(BaseModel):
+    description: str
 
 class BOMItem(BaseModel):
-    component_name: str = Field(..., min_length=1)
-    hs_code_4: str = Field(..., min_length=4, max_length=4)
-    origin_country: str = Field(..., min_length=2, max_length=2, description="ISO 2-letter country code")
-    value: float = Field(..., ge=0.0)
+    hs_code: str = Field(..., description="6-digit HS Code of the component")
+    value: float = Field(..., gt=0, description="Cost of the component")
+    origin_country: str = Field(..., description="2-letter ISO country code")
+    is_originating: bool = Field(False, description="Does it meet FTA origin rules?")
 
-class TradeRequest(BaseModel):
-    product_description: str = Field(..., min_length=5)
-    import_country: str = Field(..., min_length=2, max_length=2)
-    export_country: str = Field(..., min_length=2, max_length=2)
-    # The new Geographic Route: e.g., ["FR", "TR"] means it transits France and Turkey
-    transit_countries: List[str] = Field(default_factory=list, description="List of ISO 2-letter country codes the shipment passes through")
-    weight_kg: float = Field(..., gt=0.0)
-    total_customs_value: float = Field(..., ge=0.0)
-    bom: conlist(BOMItem, min_length=1)
+class ProductRequest(BaseModel):
+    description: str
+    import_country: str
+    export_country: str
+    weight_kg: float
+    shipping_mode: ShippingMode
+    bom: List[BOMItem]

@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Globe, BarChart3, Shield, Zap, TrendingDown, FileSearch } from "lucide-react";
+import { ArrowRight, Globe, BarChart3, Shield, Zap, TrendingDown, FileSearch, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlassCard from "@/components/GlassCard";
 import AnimatedCounter from "@/components/AnimatedCounter";
+import { useState } from "react";
+import { apiService } from "@/services/api";
+import { toast } from "sonner";
 
 const features = [
   { icon: FileSearch, title: "HS Classification", description: "AI-powered tariff code recommendations with 94%+ confidence scoring" },
@@ -30,6 +33,24 @@ const fadeUp = {
 };
 
 export default function Landing() {
+  const [connectionStatus, setConnectionStatus] = useState<'idle' | 'testing' | 'connected' | 'error'>('idle');
+
+  const testConnection = async () => {
+    setConnectionStatus('testing');
+    try {
+      const response = await apiService.testConnection();
+      if (response.status === "Frontend-Backend Integration Working") {
+        setConnectionStatus('connected');
+        toast.success("Backend connection successful!");
+      } else {
+        setConnectionStatus('error');
+        toast.error("Unexpected response from backend");
+      }
+    } catch (error) {
+      setConnectionStatus('error');
+      toast.error("Backend connection failed. Make sure the backend is running on port 8000.");
+    }
+  };
   return (
     <div className="min-h-screen bg-background overflow-hidden">
       {/* Nav */}
@@ -42,6 +63,27 @@ export default function Landing() {
             <span className="text-lg font-bold tracking-tight">Tradle <span className="glow-text-purple">AI</span></span>
           </Link>
           <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={testConnection}
+              disabled={connectionStatus === 'testing'}
+              className="flex items-center gap-2"
+            >
+              {connectionStatus === 'testing' && (
+                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
+              )}
+              {connectionStatus === 'connected' && (
+                <CheckCircle className="w-4 h-4 text-green-500" />
+              )}
+              {connectionStatus === 'error' && (
+                <XCircle className="w-4 h-4 text-red-500" />
+              )}
+              {connectionStatus === 'idle' && 'Test Backend'}
+              {connectionStatus === 'testing' && 'Testing...'}
+              {connectionStatus === 'connected' && 'Connected'}
+              {connectionStatus === 'error' && 'Connection Failed'}
+            </Button>
             <Link to="/dashboard">
               <Button variant="ghost" size="sm">Platform</Button>
             </Link>

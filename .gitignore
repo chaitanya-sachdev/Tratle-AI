@@ -123,3 +123,17 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Python / Virtual Environments
+.venv/
+backend/venv/
+__pycache__/
+*.pyc
+
+# AI Models (Do not push heavy weights to GitHub)
+*.pt
+*.bin
