@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 228 40% 7%;
+    --foreground: 220 20% 92%;
+
+    --card: 228 35% 11%;
+    --card-foreground: 220 20% 92%;
+
+    --popover: 228 35% 11%;
+    --popover-foreground: 220 20% 92%;
+
+    --primary: 265 90% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 228 30% 16%;
+    --secondary-foreground: 220 20% 85%;
+
+    --muted: 228 25% 14%;
+    --muted-foreground: 220 15% 55%;
+
+    --accent: 175 80% 45%;
+    --accent-foreground: 228 40% 7%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 152 70% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 55%;
+    --warning-foreground: 228 40% 7%;
+
+    --border: 228 25% 18%;
+    --input: 228 25% 18%;
+    --ring: 265 90% 60%;
+
+    --radius: 0.75rem;
+
+    --glass-bg: 228 35% 12%;
+    --glass-border: 228 20% 22%;
+    --glass-highlight: 228 20% 28%;
+
+    --gradient-purple: linear-gradient(135deg, hsl(265 90% 60%), hsl(280 85% 50%));
+    --gradient-teal: linear-gradient(135deg, hsl(175 80% 45%), hsl(190 75% 40%));
+    --gradient-hero: linear-gradient(160deg, hsl(228 40% 7%) 0%, hsl(250 35% 12%) 50%, hsl(228 40% 7%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(228 35% 13%) 0%, hsl(228 35% 9%) 100%);
+    --gradient-glow-purple: radial-gradient(ellipse at center, hsl(265 90% 60% / 0.15) 0%, transparent 70%);
+    --gradient-glow-teal: radial-gradient(ellipse at center, hsl(175 80% 45% / 0.12) 0%, transparent 70%);
+
+    --shadow-sm: 0 2px 8px hsl(228 40% 4% / 0.4);
+    --shadow-md: 0 4px 16px hsl(228 40% 4% / 0.5);
+    --shadow-lg: 0 8px 32px hsl(228 40% 4% / 0.6);
+    --shadow-glow-purple: 0 0 30px hsl(265 90% 60% / 0.2);
+    --shadow-glow-teal: 0 0 30px hsl(175 80% 45% / 0.15);
+
+    --sidebar-background: 228 38% 9%;
+    --sidebar-foreground: 220 20% 75%;
+    --sidebar-primary: 265 90% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 228 30% 16%;
+    --sidebar-accent-foreground: 220 20% 92%;
+    --sidebar-border: 228 25% 16%;
+    --sidebar-ring: 265 90% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply rounded-xl border;
+    background: linear-gradient(145deg, hsl(228 35% 13% / 0.8) 0%, hsl(228 35% 9% / 0.6) 100%);
+    border-color: hsl(228 20% 22% / 0.5);
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-md);
+  }
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300;
+  }
+  .glass-card-hover:hover {
+    border-color: hsl(265 90% 60% / 0.3);
+    box-shadow: var(--shadow-glow-purple);
+    transform: translateY(-2px);
+  }
+  .glow-text-purple {
+    background: linear-gradient(135deg, hsl(265 90% 65%), hsl(280 85% 55%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .glow-text-teal {
+    background: linear-gradient(135deg, hsl(175 80% 50%), hsl(190 75% 45%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .glow-text-mixed {
+    background: linear-gradient(135deg, hsl(265 90% 65%), hsl(175 80% 50%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .gradient-border {
+    position: relative;
+  }
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, hsl(265 90% 60% / 0.5), hsl(175 80% 45% / 0.3));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .dot-pattern {
+    background-image: radial-gradient(hsl(220 20% 30% / 0.3) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
