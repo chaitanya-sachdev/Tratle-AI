@@ -1,0 +1,10 @@
+{
+  "USMCA": {
+    "member_countries": ["US", "CA", "MX"],
+    "default_rvc_threshold": 60.0
+  },
+  "US-EU_MOCK": {
+    "member_countries": ["US", "DE", "FR", "IT", "ES", "NL"],
+    "default_rvc_threshold": 50.0
+  }
+}
