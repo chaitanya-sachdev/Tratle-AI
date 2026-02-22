@@ -14,15 +14,15 @@ export default function AppLayout() {
   const location = useLocation();
 
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-[hsl(var(--background))]">
+      {/* Sidebar - dark glass vibe */}
       <aside className="w-64 border-r border-border bg-sidebar flex flex-col fixed inset-y-0 left-0 z-30">
         <NavLink to="/" className="flex items-center gap-2.5 px-6 py-5 border-b border-border">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <Globe className="w-4 h-4 text-primary-foreground" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-[#ff7e00] to-[#ff4b00] flex items-center justify-center shadow-lg shadow-orange-500/20">
+            <Globe className="w-4 h-4 text-white" />
           </div>
-          <span className="text-lg font-bold tracking-tight text-foreground">
-            Tradle <span className="glow-text-purple">AI</span>
+          <span className="text-lg font-display font-bold tracking-tight text-foreground">
+            Tradle <span className="gradient-text">AI</span>
           </span>
         </NavLink>
 
@@ -34,10 +34,10 @@ export default function AppLayout() {
                 key={item.to}
                 to={item.to}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "bg-primary/10 text-primary border border-primary/20"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                    ? "bg-orange-500/15 text-orange-400 border border-orange-500/25"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
                 )}
               >
                 <item.icon className="w-4 h-4" />
@@ -48,11 +48,11 @@ export default function AppLayout() {
         </nav>
 
         <div className="px-4 py-4 border-t border-border">
-          <div className="glass-card p-3 text-center">
+          <div className="glass-card p-3 text-center rounded-xl">
             <p className="text-xs text-muted-foreground">Platform Status</p>
             <div className="flex items-center justify-center gap-1.5 mt-1">
-              <span className="w-2 h-2 rounded-full bg-success animate-pulse-glow" />
-              <span className="text-xs font-medium text-success">Operational</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-medium text-emerald-400">Operational</span>
             </div>
           </div>
         </div>

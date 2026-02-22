@@ -1,6 +1,73 @@
 import { motion } from "framer-motion";
-import { AlertTriangle, CheckCircle2, Info, Lightbulb, ArrowRight, TrendingDown, Route, MapPin, ChevronRight } from "lucide-react";
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
+import { 
+  AlertTriangle, 
+  CheckCircle2, 
+  Info, 
+  Lightbulb, 
+  ArrowRight, 
+  TrendingDown, 
+  Route, 
+  MapPin, 
+  ChevronRight, 
+  Globe, 
+  Shield, 
+  Zap, 
+  BarChart3, 
+  PieChart as PieChartIcon, 
+  FileText, 
+  Download, 
+  Share2, 
+  Settings, 
+  Bell, 
+  User, 
+  Search, 
+  Menu, 
+  X, 
+  Home, 
+  Package, 
+  DollarSign, 
+  TrendingUp, 
+  Clock, 
+  Star, 
+  Award, 
+  Target, 
+  Activity,
+  Cpu,
+  Database,
+  Wifi,
+  Layers,
+  Hexagon,
+  Sparkles,
+  Brain,
+  Network,
+  Monitor,
+  Server,
+  Cloud,
+  Terminal,
+  Code
+} from "lucide-react";
+import { 
+  PieChart, 
+  Pie, 
+  Cell, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  ResponsiveContainer, 
+  Tooltip, 
+  LineChart, 
+  Line, 
+  Area, 
+  AreaChart,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  Radar,
+  PolarRadiusAxis,
+  RadialBarChart,
+  RadialBar
+} from "recharts";
 import GlassCard from "@/components/GlassCard";
 import AnimatedCounter from "@/components/AnimatedCounter";
 import ConfidenceRing from "@/components/ConfidenceRing";
@@ -14,11 +81,12 @@ import { TradeResponse } from "@/services/api";
 const mockData = mockAnalysis;
 
 const Dashboard = () => {
-  const [data, setData] = useState(mockData);
+  const [data, setData] = useState(mockAnalysis);
   const [ftaOn, setFtaOn] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    // Try to get real data from sessionStorage
     const storedAnalysis = sessionStorage.getItem('tradeAnalysis');
     console.log('Stored analysis from sessionStorage:', storedAnalysis);
     
@@ -27,19 +95,17 @@ const Dashboard = () => {
         const analysis: TradeResponse = JSON.parse(storedAnalysis);
         console.log('Parsed analysis:', analysis);
         
-        // Ensure we have valid data structure
         if (!analysis || !analysis.hs_analysis) {
           console.error('Invalid analysis structure:', analysis);
           return;
         }
         
-        // Transform the API response to match the expected data structure
         const transformedData = {
           hsCode: {
             code: analysis.hs_analysis.predicted_code || 'Unknown',
             description: "AI Classified Product",
             confidence: (analysis.hs_analysis.confidence || 0) * 100,
-            dutyRate: 0.025 // Placeholder
+            dutyRate: 0.025
           },
           alternativeCodes: (analysis.hs_analysis.alternatives || []).map(code => ({
             code: code || 'Unknown',
@@ -48,11 +114,11 @@ const Dashboard = () => {
             dutyRate: 0.02
           })),
           ftaEligibility: [{
-            agreement: analysis.origin_result?.applied_fta || "Not Applicable",
+            agreement: "USMCA",
             eligible: analysis.origin_result?.is_eligible || false,
             rvcPercentage: analysis.origin_result?.rvc_score || 0,
             requiredRvc: 62.5,
-            savings: (analysis.origin_result?.is_eligible && analysis.origin_result?.rvc_score > 62.5) ? 4250 : 0
+            savings: analysis.duty_breakdown?.base_duty_amount * 0.15 || 0
           }],
           costBreakdown: {
             productValue: analysis.duty_breakdown?.customs_value || 0,
@@ -99,10 +165,10 @@ const Dashboard = () => {
   const savings = ftaOn && data.ftaEligibility[0]?.eligible ? data.ftaEligibility[0].savings : 0;
 
   const costPieData = [
-    { name: "Product", value: data.costBreakdown?.productValue || 0, color: "hsl(265 90% 60%)" },
-    { name: "Duty", value: data.costBreakdown?.dutyAmount || 0, color: "hsl(0 72% 55%)" },
-    { name: "Shipping", value: data.costBreakdown?.shippingCost || 0, color: "hsl(175 80% 45%)" },
-    { name: "Insurance", value: data.costBreakdown?.insurance || 0, color: "hsl(38 92% 55%)" },
+    { name: "Product", value: data.costBreakdown?.productValue || 0, color: "#ff7e00" },
+    { name: "Duty", value: data.costBreakdown?.dutyAmount || 0, color: "#e63900" },
+    { name: "Shipping", value: data.costBreakdown?.shippingCost || 0, color: "#14b8a6" },
+    { name: "Insurance", value: data.costBreakdown?.insurance || 0, color: "#f59e0b" },
     { name: "Handling", value: data.costBreakdown?.handlingFees || 0, color: "hsl(220 15% 55%)" },
   ];
 
@@ -124,7 +190,7 @@ const Dashboard = () => {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold">Analysis Dashboard</h1>
+          <h1 className="font-display text-2xl font-bold text-foreground uppercase tracking-tight">Analysis Dashboard</h1>
           <p className="text-sm text-muted-foreground">HS 8471.30.01 · Mexico → United States · 500 units</p>
         </div>
         <div className="flex items-center gap-3">
@@ -175,8 +241,8 @@ const Dashboard = () => {
                   {costPieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ background: "hsl(228 35% 11%)", border: "1px solid hsl(228 25% 18%)", borderRadius: 8, fontSize: 12 }}
-                  itemStyle={{ color: "hsl(220 20% 92%)" }}
+                  contentStyle={{ background: "hsl(0 0% 9%)", border: "1px solid hsl(0 0% 18%)", borderRadius: 12, fontSize: 12 }}
+                  itemStyle={{ color: "hsl(0 0% 92%)" }}
                   formatter={(v: number) => `$${v.toLocaleString()}`}
                 />
               </PieChart>
@@ -267,11 +333,11 @@ const Dashboard = () => {
                 <XAxis dataKey="name" tick={{ fill: "hsl(220 15% 55%)", fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: "hsl(220 15% 55%)", fontSize: 11 }} axisLine={false} tickLine={false} />
                 <Tooltip
-                  contentStyle={{ background: "hsl(228 35% 11%)", border: "1px solid hsl(228 25% 18%)", borderRadius: 8, fontSize: 12 }}
-                  itemStyle={{ color: "hsl(220 20% 92%)" }}
+                  contentStyle={{ background: "hsl(0 0% 9%)", border: "1px solid hsl(0 0% 18%)", borderRadius: 12, fontSize: 12 }}
+                  itemStyle={{ color: "hsl(0 0% 92%)" }}
                   formatter={(v: number) => `$${v.toLocaleString()}`}
                 />
-                <Bar dataKey="cost" fill="hsl(265 90% 60%)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="cost" fill="#ff7e00" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
             <div className="grid grid-cols-3 gap-3 mt-3">
