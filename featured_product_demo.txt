@@ -1,0 +1,90 @@
+FEATURED PRODUCT DEMO - AI TRADE OPTIMIZATION SHOWCASE
+
+===========================================
+PRODUCT: Advanced AI Development Workstation
+===========================================
+
+Product Description:
+"Cutting-edge AI development workstation featuring Intel Core i9-13900K processor with 24 cores and 32 threads, 64GB DDR5-6000 RAM in quad-channel configuration, dual NVIDIA RTX 4090 GPUs in SLI configuration for parallel deep learning training, 4TB NVMe Gen4 SSD array with RAID 0 for ultra-fast data access, ASUS ProArt Z790 motherboard with PCIe 5.0 support, 1600W 80+ Titanium power supply with redundant cooling, custom liquid cooling system with RGB lighting, and integrated Thunderbolt 4 connectivity. This workstation is specifically designed for machine learning model training, real-time AI inference, 8K video editing, and computational research applications. Pre-installed with Ubuntu 22.04 LTS, CUDA drivers, PyTorch, TensorFlow, and Jupyter Notebook environment. Compliant with IEEE standards and includes 3-year on-site warranty service."
+
+===========================================
+TECHNICAL SPECIFICATIONS:
+===========================================
+- CPU: Intel Core i9-13900K (24 cores, 32 threads, up to 5.8GHz)
+- GPU: 2x NVIDIA RTX 4090 (48GB total VRAM)
+- Memory: 64GB DDR5-6000 (4x 16GB modules)
+- Storage: 4TB NVMe Gen4 SSD RAID 0
+- Motherboard: ASUS ProArt Z790 Creator Edition
+- Power: 1600W 80+ Titanium PSU
+- Cooling: Custom liquid cooling + RGB
+- Connectivity: Thunderbolt 4, WiFi 6E, 10Gb Ethernet
+- OS: Ubuntu 22.04 LTS with AI development stack
+
+===========================================
+EXPECTED AI CLASSIFICATION:
+===========================================
+Primary HS Code: 8471.41.00
+- Description: Other automatic data processing machines
+- Confidence: 96%
+- Reasoning: Multi-GPU configuration for AI/ML workloads
+
+Alternative HS Codes:
+- 8471.50.00 - Processing units (85% confidence)
+- 8471.80.90 - Other computing equipment (78% confidence)
+
+===========================================
+TRADE DETAILS:
+===========================================
+- Total Value: $8,750 USD
+- Weight: 15 kg
+- Origin: United States (Assembly)
+- Components from: USA, Taiwan, South Korea, China
+
+===========================================
+DEMO SCENARIO:
+===========================================
+
+1. **Product Classification Demo**
+   - Input the full product description
+   - Watch AI classify as 8471.41.00 with 96% confidence
+   - Show alternative HS codes with confidence scores
+
+2. **Supply Chain Analysis**
+   - Upload the BOM showing multi-country origins
+   - Display origin verification and qualification analysis
+   - Show which components qualify for preferential treatment
+
+3. **Duty Calculation**
+   - Calculate base duties for target import country
+   - Apply FTA benefits (USMCA/other agreements)
+   - Show total landed cost breakdown
+
+4. **Optimization Recommendations**
+   - Suggest alternative sourcing strategies
+   - Show potential savings from supply chain adjustments
+   - Display route optimization recommendations
+
+===========================================
+VIDEO SCRIPT HIGHLIGHTS:
+===========================================
+
+"Now I'll demonstrate our AI trade optimization with this advanced AI development workstation..."
+
+"Notice how the system instantly processes this complex technical description..."
+
+"The AI correctly identifies this as a high-performance computing machine..."
+
+"Watch as it analyzes the multi-country supply chain and calculates duty optimization..."
+
+"Our platform identifies $1,247 in potential savings through strategic sourcing..."
+
+"This is how companies using our system save thousands on international trade..."
+
+===========================================
+IMPACT METRICS FOR DEMO:
+===========================================
+- Processing Time: <2 seconds for classification
+- Accuracy: 96% confidence in HS code classification
+- Savings Identified: $1,247 USD (14.3% of total value)
+- Compliance Score: 98/100
+- Risk Assessment: Low (proper documentation available)

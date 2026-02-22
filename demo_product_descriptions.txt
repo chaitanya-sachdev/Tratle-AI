@@ -1,0 +1,75 @@
+DEMO PRODUCT DESCRIPTIONS FOR TRADE OPTIMIZATION VIDEO
+
+===========================================
+PRODUCT 1: High-End Gaming Workstation
+===========================================
+Product Description:
+"Complete high-performance gaming workstation featuring Intel Core i9-13900K processor, 32GB DDR5-5600 RAM, NVIDIA RTX 4090 graphics card, 2TB NVMe SSD, ASUS ROG motherboard, 1200W modular power supply, NZXT mid-tower case with tempered glass, and Noctua premium air cooling system. Designed for 4K gaming, content creation, and AI development workloads."
+
+Expected HS Code: 8471.41.00 (Other automatic data processing machines)
+Confidence: High (95%+)
+Trade Value: ~$3,400 USD
+
+===========================================
+PRODUCT 2: Professional Server Components
+===========================================
+Product Description:
+"Rack-mounted server components including dual Xeon processors, 128GB ECC DDR4 memory, 4TB enterprise SAS hard drives in RAID configuration, redundant power supplies, and remote management controller. Designed for 24/7 data center operations with virtualization and cloud computing workloads."
+
+Expected HS Code: 8471.50.00 (Processing units other than those of subheading 8471.41 or 8471.49)
+Confidence: High (90%+)
+Trade Value: ~$8,500 USD
+
+===========================================
+PRODUCT 3: Medical Imaging Equipment
+===========================================
+Product Description:
+"Portable medical ultrasound device with high-resolution LCD display, dual-frequency transducers, rechargeable lithium battery pack, DICOM imaging software, and rugged carrying case. FDA approved for diagnostic imaging in clinical settings with wireless connectivity to hospital information systems."
+
+Expected HS Code: 9018.12.00 (Ultrasonic scanning appliances)
+Confidence: Very High (98%+)
+Trade Value: ~$12,000 USD
+
+===========================================
+PRODUCT 4: Industrial Automation System
+===========================================
+Product Description:
+"Programmable logic controller (PLC) system with modular I/O modules, HMI touchscreen interface, industrial Ethernet communication, redundant power supplies, and explosion-proof enclosure. Designed for manufacturing automation with real-time process control and data acquisition capabilities."
+
+Expected HS Code: 8537.10.00 (Programmable controllers)
+Confidence: High (92%+)
+Trade Value: ~$6,800 USD
+
+===========================================
+PRODUCT 5: Consumer Electronics Bundle
+===========================================
+Product Description:
+"Smart home technology bundle including voice-activated assistant hub, wireless security cameras with night vision, smart thermostat with mobile app control, LED lighting system with color changing capabilities, and video doorbell with two-way audio communication. All devices compatible with major home automation platforms."
+
+Expected HS Code: 8517.62.00 (Machines for the reception of voice, images or other data)
+Confidence: Medium (85%+)
+Trade Value: ~$1,200 USD
+
+===========================================
+DEMO SCRIPT TALKING POINTS:
+===========================================
+
+1. "Let me show you how our AI-powered trade optimization platform works with real products..."
+
+2. "First, I'll input this high-end gaming workstation description..."
+
+3. "The AI instantly classifies it under HS Code 8471.41.00 with 95% confidence..."
+
+4. "Now watch how it calculates duties and optimizes the trade route..."
+
+5. "The system identifies potential savings of $2,340 through USMCA benefits..."
+
+6. "Here's another example with medical equipment - notice the higher confidence score..."
+
+7. "Our platform handles everything from consumer electronics to industrial machinery..."
+
+8. "The AI provides alternative HS codes and detailed reasoning for each classification..."
+
+9. "Watch how quickly it processes complex multi-component products..."
+
+10. "This is how companies save thousands on international trade duties..."
