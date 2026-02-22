@@ -2,6 +2,8 @@
 
 A comprehensive trade optimization platform that leverages Groq's AI capabilities to classify products, calculate duties, and optimize international trade operations.
 
+Team Name: Vareth
+Team Members: Pragun Gupta, Jayat Kohli, Chaitanya Sachdev, Souradeep Dasgupta
 ## Project Architecture
 
 This is a full-stack application with:
