@@ -107,12 +107,15 @@ const Dashboard = () => {
             confidence: (analysis.hs_analysis.confidence || 0) * 100,
             dutyRate: 0.025
           },
-          alternativeCodes: (analysis.hs_analysis.alternatives || []).map(code => ({
-            code: code || 'Unknown',
-            description: "Alternative classification",
-            confidence: 75,
-            dutyRate: 0.02
-          })),
+          alternativeCodes: (analysis.hs_analysis.alternatives || []).map(alt => {
+            console.log('Processing alternative:', alt);
+            return {
+              code: alt.code || 'Unknown',
+              description: alt.description || "Alternative classification",
+              confidence: alt.confidence || 75,
+              dutyRate: 0.02
+            };
+          }),
           ftaEligibility: [{
             agreement: "USMCA",
             eligible: analysis.origin_result?.is_eligible || false,

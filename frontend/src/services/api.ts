@@ -31,7 +31,7 @@ export interface HSAnalysis {
   predicted_code: string;
   confidence: number;
   reasoning: string;
-  alternative_codes?: Array<{
+  alternatives: Array<{
     code: string;
     description: string;
     confidence: number;
@@ -67,7 +67,11 @@ export interface TradeResponse {
   hs_analysis: {
     predicted_code: string;
     confidence: number;
-    alternatives: string[];
+    alternatives: Array<{
+      code: string;
+      description: string;
+      confidence: number;
+    }>;
     reasoning: string;
   };
   origin_result: {

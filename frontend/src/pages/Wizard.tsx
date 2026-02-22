@@ -120,12 +120,33 @@ export default function Wizard() {
       // Parse BOM data if available
       let bom = [];
       if (form.bomPreview.length > 1) {
-        bom = form.bomPreview.slice(1).map(row => ({
-          hs_code: row[2] || '000000', // Use HS code from CSV or default
-          value: parseFloat(row[1]) || 0,
-          origin_country: row[2] || 'US', // Use origin from CSV or default
-          is_originating: false // Default to false for testing
-        }));
+        // Country name to ISO code mapping
+        const countryToIso: { [key: string]: string } = {
+          'United States': 'US',
+          'South Korea': 'KR',
+          'Taiwan': 'TW',
+          'Malaysia': 'MY',
+          'China': 'CN',
+          'Austria': 'AT',
+          'Germany': 'DE',
+          'Japan': 'JP',
+          'Mexico': 'MX',
+          'Canada': 'CA',
+          'India': 'IN',
+          'Vietnam': 'VN'
+        };
+
+        bom = form.bomPreview.slice(1).map(row => {
+          const countryName = row[1] || 'US';
+          const isoCode = countryToIso[countryName] || 'US';
+          
+          return {
+            hs_code: row[2] || '000000', // Use HS code from CSV or default
+            value: parseFloat(row[3]) || 0, // Value is in column 3 (index 3)
+            origin_country: isoCode, // Convert country name to ISO code
+            is_originating: false // Default to false for testing
+          };
+        });
       }
 
       const request: ProductRequest = {

@@ -1,10 +1,15 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
+class AlternativeCode(BaseModel):
+    code: str
+    description: str
+    confidence: float
+
 class HSAnalysis(BaseModel):
     predicted_code: str
     confidence: float
-    alternatives: List[str]
+    alternatives: List[AlternativeCode]
     reasoning: str
 
 class DutyBreakdown(BaseModel):
