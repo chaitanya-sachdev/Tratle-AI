@@ -48,6 +48,11 @@ Important: You must add your Groq API key to `backend/.env`:
 ```env
 GROQ_API_KEY=your_actual_groq_api_key_here
 ```
+### To generate a Groq API key:
+1. Go to https://console.groq.com/
+2. Sign up or log in
+3. Create a new API key
+4. Copy the API key and add it to `backend/.env`
 
 ### 2. Frontend Setup
 
